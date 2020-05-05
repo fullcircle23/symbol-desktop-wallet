@@ -16,6 +16,7 @@
 import { Account, Deadline, NamespaceId, NetworkType, PlainMessage, TransferTransaction } from 'symbol-sdk'
 import { createStore } from '@MOCKS/Store'
 import { ViewTransferTransaction } from '@/core/transactions/ViewTransferTransaction'
+import { getTestAccount } from '@MOCKS/Accounts'
 
 const store = createStore({})
 
@@ -43,6 +44,32 @@ describe('transactions/ViewTransferTransaction', () => {
       expect(view.transaction).toBeDefined()
 
       expect(view.detailItems.length).toBe(3)
+      // XXX test recognition of Namespace vs Address for recipient
+      // XXX test recognition of Namespace vs MosaicId for mosaics
+    })
+  })
+
+  describe('parse() should', () => {
+    test('populate transfer transaction fields', () => {
+      // prepare
+      const view = new ViewTransferTransaction(store)
+      const formItems: TransferFormFieldsType = {
+        recipient: getTestAccount('cosigner1').address,
+        mosaics: [],
+        message: PlainMessage.create('ViewTransferTransaction'),
+        maxFee: UInt64.fromUint(0),
+      }
+
+      // act
+      view.parse(formItems)
+
+      // assert
+      expect(view.values).toBeDefined()
+      expect(view.values.has('recipient')).toBe(true)
+      expect(view.values.has('mosaics')).toBe(true)
+      expect(view.values.has('message')).toBe(true)
+      expect(view.values.get('recipient').plain()).toBe(getTestAccount('cosigner1').address.plain())
+      expect(view.values.get('message').payload).toBe('ViewTransferTransaction')
     })
   })
 })

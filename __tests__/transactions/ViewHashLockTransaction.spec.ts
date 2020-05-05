@@ -22,7 +22,8 @@ import {
   UInt64,
 } from 'symbol-sdk'
 import { createStore } from '@MOCKS/Store'
-import { getTestAccount } from '@MOCKS/profiles'
+import { getTestAccount } from '@MOCKS/Accounts'
+import { getFakeTransaction } from '@MOCKS/Transactions'
 import { ViewHashLockTransaction } from '@/core/transactions/ViewHashLockTransaction'
 
 const store = createStore({})

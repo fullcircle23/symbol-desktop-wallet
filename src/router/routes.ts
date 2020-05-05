@@ -361,6 +361,18 @@ export const routes: AppRoute[] = [
         ],
       },
       {
+        path: '/harvesting',
+        name: 'harvesting',
+        meta: {
+          protected: true,
+          clickable: true,
+          title: 'sidebar_item_harvesting',
+          icon: officialIcons.harvest,
+        },
+        // @ts-ignore
+        component: () => import('@/views/pages/harvesting/Harvesting.vue'),
+      },
+      {
         path: '/communityPanel',
         name: 'community',
         redirect: '/information',

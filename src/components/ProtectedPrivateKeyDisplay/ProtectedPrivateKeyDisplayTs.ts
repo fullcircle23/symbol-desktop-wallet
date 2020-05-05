@@ -32,7 +32,7 @@ export class ProtectedPrivateKeyDisplayTs extends Vue {
   @Prop({
     default: null,
   })
-  account: AccountModel
+  account: AccountModel | Account
 
   /**
    * UI Helpers
@@ -57,7 +57,7 @@ export class ProtectedPrivateKeyDisplayTs extends Vue {
    * @internal
    * @var {string}
    */
-  private plainInformation: string = ''
+  protected plainInformation: string = ''
 
   /**
    * seconds counter
@@ -117,6 +117,13 @@ export class ProtectedPrivateKeyDisplayTs extends Vue {
    * @return {void}
    */
   public onClickDisplay() {
+    // don't prompt for password when an Account is povided as a prop
+    if (this.account instanceof Account) {
+      this.onAccountUnlocked(this.account)
+      return
+    }
+
+    // prompt for password when an AccountModel is provided as a prop
     this.hasAccountUnlockModal = true
   }
 

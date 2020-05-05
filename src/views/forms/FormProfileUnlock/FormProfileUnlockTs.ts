@@ -14,7 +14,7 @@
  *
  */
 import { Account, NetworkType, Password, Crypto } from 'symbol-sdk'
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Prop } from 'vue-property-decorator'
 import { mapGetters } from 'vuex'
 // internal dependencies
 import { AccountModel } from '@/core/database/entities/AccountModel'
@@ -68,6 +68,12 @@ export class FormProfileUnlockTs extends Vue {
   public formItems = {
     password: '',
   }
+
+  /**
+   * Text shown in the confirmation button
+   * @type {string}
+   */
+  @Prop({ default: 'confirm' }) buttonText: string
 
   /// region computed properties getter/setter
   /// end-region computed properties getter/setter

@@ -8,11 +8,7 @@
           </div>
 
           <div class="detail-row">
-            <ImportanceScoreDisplay :address="currentAccount.address" />
-          </div>
-
-          <div class="detail-row">
-            <AccountAddressDisplay :account="currentAccount" />
+            <AccountAddressDisplay :address="currentAccount.address" />
           </div>
 
           <div class="detail-row">

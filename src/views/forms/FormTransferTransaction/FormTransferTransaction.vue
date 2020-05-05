@@ -35,7 +35,7 @@
           </div>
 
           <!-- Transfer message input field -->
-          <MessageInput v-model="formItems.messagePlain" @input="onChangeMessage" />
+          <MessageInput v-model="formItems.plainMessage" @input="onChangeMessage" />
 
           <!-- Transaction fee selector and submit button -->
           <MaxFeeAndSubmit

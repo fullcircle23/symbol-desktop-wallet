@@ -16,7 +16,7 @@
 import { NetworkType, Account, Password, Crypto } from 'symbol-sdk'
 import { AccountService } from '@/services/AccountService'
 import { MnemonicPassPhrase } from 'symbol-hd-wallets'
-import { account1Params, WalletsModel1 } from '@MOCKS/Accounts'
+import { account1Params, AccountModel1 } from '@MOCKS/Accounts'
 
 // Sample mnemonic passphrase
 const mnemonic = new MnemonicPassPhrase(
@@ -46,7 +46,7 @@ const expectedAccounts = Object.values(expectedPrivateKeys).map((key) =>
 const generatedAccounts = new AccountService().generateAccountsFromMnemonic(mnemonic, NetworkType.TEST_NET, 2)
 const generatedAddresses = new AccountService().getAddressesFromMnemonic(mnemonic, NetworkType.TEST_NET, 2)
 
-describe('services/WalletServices', () => {
+describe('services/AccountService', () => {
   describe('generateAccountsFromMnemonic() should', () => {
     test('generate correct child account given mnemonic', () => {
       expect(generatedAccounts).toBeDefined()
@@ -109,11 +109,11 @@ describe('services/WalletServices', () => {
       const service = new AccountService()
 
       // get initial encrypted private key values
-      const initialEncPrivate = WalletsModel1.encryptedPrivateKey
+      const initialEncPrivate = AccountModel1.encryptedPrivateKey
 
       // update the model
       const updatedWallet = service.updateWalletPassword(
-        WalletsModel1,
+        AccountModel1,
         account1Params.password,
         new Password('password2'),
       )
@@ -132,7 +132,7 @@ describe('services/WalletServices', () => {
     test('should throw if provided with an incorrect password', () => {
       const service = new AccountService()
       expect(() => {
-        service.updateWalletPassword(WalletsModel1, new Password('wrong_password'), new Password('password2'))
+        service.updateWalletPassword(AccountModel1, new Password('wrong_password'), new Password('password2'))
       }).toThrow()
     })
   })

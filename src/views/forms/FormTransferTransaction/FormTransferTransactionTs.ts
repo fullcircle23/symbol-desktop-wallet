@@ -127,7 +127,7 @@ export class FormTransferTransactionTs extends FormTransactionBase {
     recipient: null,
     selectedMosaicHex: '',
     relativeAmount: 0,
-    messagePlain: '',
+    plainMessage: '',
     maxFee: 0,
   }
 
@@ -168,7 +168,8 @@ export class FormTransferTransactionTs extends FormTransactionBase {
       },
     ]
 
-    this.formItems.messagePlain = !!this.message ? Formatters.hexToUtf8(this.message.payload) : ''
+    this.formItems.plainMessage = this.message ? Formatters.hexToUtf8(this.message.payload) : ''
+
     // - maxFee must be absolute
     this.formItems.maxFee = this.defaultFee
     // - initialize mosaics input manager
@@ -259,7 +260,7 @@ export class FormTransferTransactionTs extends FormTransactionBase {
     this.formItems.attachedMosaics = this.mosaicsToAttachments(transaction.mosaics)
 
     // - convert and populate message
-    this.formItems.messagePlain = Formatters.hexToUtf8(transaction.message.payload)
+    this.formItems.plainMessage = Formatters.hexToUtf8(transaction.message.payload)
 
     // - populate maxFee
     this.formItems.maxFee = transaction.maxFee.compact()

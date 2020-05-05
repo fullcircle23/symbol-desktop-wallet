@@ -543,5 +543,17 @@
   "warning_already_a_cosignatory": "This account is already a cosignatory!",
   "welcome": "Welcome",
   "word": "Word",
-  "x_seconds": "{seconds}s."
+  "x_seconds": "{seconds}s.",
+  "harvesting_remote_account": "remote account",
+  "harvesting_create_remote_account": "Create remote account",
+  "harvesting_remote_account_description_1": "For security reasons, you should create a remote account(proxy) as a delegated harvester.",
+  "harvesting_remote_account_description_2": "Thus, there will be no need to share the private key of your account with the node",
+  "harvesting_remote_account_description_3": "Enter your password and click \"next\" to create a remote account.",
+  "harvesting_remote_account_creation_successful_1": "Your remote account has been created successfully. Please keep its private key secure",
+  "harvesting_node_get_node_info": "Get node info ",
+  "harvesting_node_not_eligible": "This not is not eligible for harvesting",
+  "REMOTE_ACCOUNT": "Remote account",
+  "ACCOUNT_LINK": "Account link",
+  "NODE_SELECTION": "Node selection",
+  "DELEGATION_REQUEST": "Delegation request"
 }

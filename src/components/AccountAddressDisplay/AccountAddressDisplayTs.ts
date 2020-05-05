@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and limitations under the License.
  *
  */
+// external dependencies
+import { Address } from 'symbol-sdk'
 import { Component, Prop, Vue } from 'vue-property-decorator'
+
 // internal dependencies
-import { AccountModel } from '@/core/database/entities/AccountModel'
 //@ts-ignore
 import ButtonCopyToClipboard from '@/components/ButtonCopyToClipboard/ButtonCopyToClipboard.vue'
+import { UIHelpers } from '@/core/utils/UIHelpers'
 
 @Component({
   components: {
@@ -28,12 +31,15 @@ export class AccountAddressDisplayTs extends Vue {
   @Prop({
     default: null,
   })
-  account: AccountModel
+  address: string
 
-  public getAccountPrettyAddress(): string {
-    return (this.account && AccountModel.getObjects(this.account).address.pretty()) || ''
+  /**
+   * UI Helpers
+   * @var {UIHelpers}
+   */
+  public uiHelpers = UIHelpers
+
+  public getPrettyAddress(): string {
+    return this.address ? Address.createFromRawAddress(this.address).pretty() : ''
   }
-
-  /// region computed properties getter/setter
-  /// end-region computed properties getter/setter
 }

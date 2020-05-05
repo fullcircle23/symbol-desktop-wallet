@@ -24,7 +24,7 @@
               </ErrorTooltip>
             </ValidationProvider>
             <button class="button-style validation-button right-side-button" type="submit" @click="processVerification">
-              {{ $t('confirm') }}
+              {{ $t(buttonText) }}
             </button>
           </div>
         </template>

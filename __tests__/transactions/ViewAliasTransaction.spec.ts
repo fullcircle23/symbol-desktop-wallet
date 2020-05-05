@@ -15,7 +15,9 @@
  */
 import { AliasAction, Deadline, MosaicAliasTransaction, MosaicId, NamespaceId, NetworkType } from 'symbol-sdk'
 import { createStore } from '@MOCKS/Store'
-import { ViewAliasTransaction } from '@/core/transactions/ViewAliasTransaction'
+import { getTestAccount } from '@MOCKS/Accounts'
+import { getFakeTransaction } from '@MOCKS/Transactions'
+import { AliasFormFieldsType, ViewAliasTransaction } from '@/core/transactions/ViewAliasTransaction'
 
 const store = createStore({})
 
