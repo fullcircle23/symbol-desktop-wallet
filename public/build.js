@@ -1,15 +1,25 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+console.log('---------------------build.js- in public s---------------')
 const path = require('path')
 const {app, BrowserWindow, shell, globalShortcut, Menu, ipcMain} = require('electron')
 const electron = require('electron')
+const nodehid = require('@ledgerhq/hw-transport-node-hid');
+const Symbol = require("symbol-sdk");
+// const LedgerCallServer = require("./LedgerCallServer");
+console.log('-------------------nodehid',nodehid)
 const name = electron.app.getName()
+const ledgerCallServer = require('../dist/LedgerCallServer')
 
+// console.log('--------------------Node Hid',Symbol)
+const BIPPath = require('bip32-path');
+console.log('--------------------LedgerCallServe',ledgerCallServer)
+// LedgerCallServer.initialize()
 // Set the path of the folder where the persisted data is stored
 electron.app.setPath ('userData', path.join(electron.app.getPath('home'), '.symbol-desktop-wallet'))
 
 const iconUrlPath = process.platform === 'darwin' ? './dist/assets/logo.png' : '../dist/assets/logo.png'
 const loadUrlPath = process.platform === 'darwin' ? './dist/index.html' : '../dist/index.html'
-
+console.log('-----------loadUrlPath',loadUrlPath)
 let mainWindow = null
 
 const template = [{
@@ -90,6 +100,7 @@ const template = [{
     },
   }],
 }]
+console.log('-----------process.platform',process.platform)
 if (process.platform === 'darwin') {
   template.unshift({
     label: name,
@@ -181,9 +192,20 @@ if (process.platform !== 'darwin') {
     }
   })
 }
-
+//--------------------------
+const domino = require('domino');
+// importreadFileSync } from 'fs';
+// const DIST_FOLDER = join(process.cwd(), 'dist');
+// const template = readFileSync(join(DIST_FOLDER, 'browser', 'index.html')).toString();
+const winObj = domino.createWindow(template);
+global['window'] = winObj;
+global['document'] = winObj.document;
+//---------------------------
 
 function initialize() {
+  // LedgerCallServer
+
+  console.log('--------------initialize---------------')
   function createMac() {
     const size = require('electron').screen.getPrimaryDisplay().workAreaSize
     const width = parseInt(size.width)
@@ -205,6 +227,7 @@ function initialize() {
         resizable: true,
       })
     }
+    
     mainWindow.loadFile(loadUrlPath)
     mainWindow.on('closed', function() {
       mainWindow = null

@@ -1,8 +1,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { mapGetters } from 'vuex'
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb'
 import { NetworkType } from 'symbol-sdk'
-import { SymbolLedger } from '@/core/utils/Ledger'
+
 import { MnemonicPassPhrase } from 'symbol-hd-wallets'
 // internal dependencies
 import { ProfileModel } from '@/core/database/entities/ProfileModel'
@@ -11,6 +10,7 @@ import { NotificationType } from '@/core/utils/NotificationType'
 import { Password } from 'symbol-sdk'
 import { AccountService } from '@/services/AccountService'
 import { ProfileService } from '@/services/ProfileService'
+import { LedgerService} from '@/services/LedgerService/LedgerService'
 import { SimpleObjectStorage } from '@/core/database/backends/SimpleObjectStorage'
 
 // child components
@@ -51,6 +51,7 @@ export class ImportLedgerProfileTs extends Vue {
   public currentPassword: Password
   public currentMnemonic: MnemonicPassPhrase
   public accountService: AccountService
+  public ledgerService: LedgerService
   public profileService: ProfileService
   public knownAccounts: string[]
   public networkTypeList: { value: NetworkType; label: string }[] = [
@@ -61,13 +62,13 @@ export class ImportLedgerProfileTs extends Vue {
   ]
 
   ledgerForm = {
-    networkType: NetworkType.TEST_NET,
     accountIndex: 0,
-    walletName: 'Ledger Account',
+    accountName: 'Ledger Account',
   }
 
   public created() {
     this.accountService = new AccountService()
+    this.ledgerService = new LedgerService()
   }
 
   toAccountDetails() {
@@ -79,11 +80,9 @@ export class ImportLedgerProfileTs extends Vue {
   toBack() {
     // this.deleteAccountAndBack();
     this.$store.dispatch('account/RESET_STATE')
-    this.$router.push('/accounts/create')
+    this.$router.push('/profiles/create')
   }
-  onNetworkSelected() {
-    this.ledgerForm = this.getDefaultFormValues(this.ledgerForm.networkType)
-  }
+
   numExistingLedgerAccounts(networkType) {
     let num = 0
     const existingAccounts = this.accountService.getAccounts()
@@ -106,17 +105,6 @@ export class ImportLedgerProfileTs extends Vue {
     return num
   }
 
-  getDefaultFormValues(networkType) {
-    const numExistingLedgerAccounts = this.numExistingLedgerAccounts(networkType)
-    const networkName = this.networkTypeList.find((network) => network.value === networkType).label
-
-    return {
-      networkType: networkType,
-      accountIndex: numExistingLedgerAccounts,
-      walletName: `${networkName} Ledger Account ${numExistingLedgerAccounts + 1}`,
-    }
-  }
-
   public onSubmit() {
     this.importAccountFromLedger()
       .then((res) => {
@@ -130,10 +118,6 @@ export class ImportLedgerProfileTs extends Vue {
         this.$store.dispatch('temporary/RESET_STATE')
         this.$store.dispatch('notification/ADD_SUCCESS', NotificationType.OPERATION_SUCCESS)
         this.toAccountDetails()
-        // this.$store.dispatch('SET_UI_DISABLED', {
-        //   isDisabled: false,
-        //   message: '',
-        // })
       })
       .catch((error) => {
         {
@@ -142,23 +126,23 @@ export class ImportLedgerProfileTs extends Vue {
       })
   }
   async importAccountFromLedger(): Promise<AccountModel> {
-    const { accountIndex, networkType, walletName } = this.ledgerForm
+    const { accountIndex, accountName } = this.ledgerForm
+    const networkType = this.$store.getters['network/networkType']
     try {
       this.$Notice.success({
         title: this['$t']('Verify information in your device!') + '',
       })
-      const transport = await TransportWebUSB.create()
-      const symbolLedger = new SymbolLedger(transport, 'XYM')
-      const accountResult = await symbolLedger.getAccount(`m/44'/4343'/${networkType}'/0'/${accountIndex}'`)
-      const { address, publicKey, path } = accountResult
-      transport.close()
 
+      const currentPath = `m/44'/4343'/${networkType}'/0'/${accountIndex}'`;
+      console.log("++++++++++currentPath",currentPath)
+      const accountResult = await this.ledgerService.getAccount(currentPath)
+      const { address, publicKey, path } = accountResult
       // add account to list
       const accName = this.currentProfile.profileName
 
       return {
         id: SimpleObjectStorage.generateIdentifier(),
-        name: walletName,
+        name: accountName,
         profileName: accName,
         node: '',
         type: AccountType.fromDescriptor('Ledger'),

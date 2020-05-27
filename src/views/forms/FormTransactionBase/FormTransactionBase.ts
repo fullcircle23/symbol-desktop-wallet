@@ -37,8 +37,7 @@ import { BroadcastResult } from '@/core/transactions/BroadcastResult'
 import { ValidationObserver } from 'vee-validate'
 import { Signer } from '@/store/Account'
 import { NetworkCurrencyModel } from '@/core/database/entities/NetworkCurrencyModel'
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb'
-import { SymbolLedger } from '@/core/utils/Ledger'
+import { LedgerService} from '@/services/LedgerService/LedgerService'
 // internal dependencies
 import { NetworkConfigurationModel } from '@/core/database/entities/NetworkConfigurationModel'
 
@@ -176,8 +175,12 @@ export class FormTransactionBase extends Vue {
    * Hook called when the component is mounted
    * @return {void}
    */
+
+  public ledgerService: LedgerService
+
   public async created() {
     this.factory = new TransactionFactory(this.$store)
+    this.ledgerService = new LedgerService()
     this.resetForm()
   }
 
@@ -312,13 +315,11 @@ export class FormTransactionBase extends Vue {
       this.$Notice.success({
         title: this['$t']('Verify information in your device!') + '',
       })
-      const transport = await TransportWebUSB.create()
-      const symbolLedger = new SymbolLedger(transport, 'XYM')
+
       const currentPath = this.currentAccount.path
       const networkType = this.currentProfile.networkType
-      const accountResult = await symbolLedger.getAccount(currentPath)
+      const accountResult = await this.ledgerService.getAccount(currentPath)
       const { address, publicKey, path } = accountResult
-      // const defaultFee = this.$store.getters['app/defaultFee']
       const currentSigner = this.$store.getters['account/currentSigner']
       const signedTransactions = []
       try {
@@ -338,13 +339,13 @@ export class FormTransactionBase extends Vue {
               maxFee, //UInt64.fromUint(defaultFee),
             )
 
-            const signature = await symbolLedger.signTransaction(
+            const signature = await this.ledgerService.signTransaction(
               path,
               aggregateTx,
               generationHash,
               this.currentSigner.publicKey,
             )
-            transport.close()
+
             this.$store.commit('account/addSignedTransaction', signature)
             signedTransactions.push(signature)
 
@@ -387,9 +388,9 @@ export class FormTransactionBase extends Vue {
               [],
               maxFee, //UInt64.fromUint(defaultFee),
             )
-
+              
             // - sign aggregate transaction and create lock
-            const signedTx = await symbolLedger.signTransaction(path, aggregateTx, this.generationHash, publicKey)
+            const signedTx = await this.ledgerService.signTransaction(path, aggregateTx, this.generationHash, publicKey)
             const hashLock = LockFundsTransaction.create(
               Deadline.create(),
               new Mosaic(networkMosaic, UInt64.fromNumericString(networkConfiguration.lockedFundsPerAggregate)),
@@ -403,7 +404,7 @@ export class FormTransactionBase extends Vue {
               title: this['$t']('Sign LockFundTransaction to finish your registration!') + '',
             })
             // - sign hash lock and push
-            const signedLock = await symbolLedger.signTransaction(currentPath, hashLock, this.generationHash, publicKey)
+            const signedLock = await this.ledgerService.signTransaction(currentPath, hashLock, this.generationHash, publicKey)
 
             // - push signed transactions (order matters)
             this.$store.commit('account/addSignedTransaction', signedLock)
@@ -441,8 +442,8 @@ export class FormTransactionBase extends Vue {
             transactions.map(async (transaction) => {
               await this.$store.dispatch('account/ADD_STAGED_TRANSACTION', transaction)
               // - sign transaction with \a account
-              const signature = await symbolLedger.signTransaction(path, transaction, this.generationHash, publicKey)
-              transport.close()
+              const signature = await this.ledgerService.signTransaction(path, transaction, this.generationHash, publicKey)
+              // transport.close()
               this.$store.commit('account/addSignedTransaction', signature)
               signedTransactions.push(signature)
 
@@ -473,7 +474,7 @@ export class FormTransactionBase extends Vue {
           )
         }
       } catch (err) {
-        transport.close()
+        // transport.close()
         this.$Notice.error({
           title: this['$t']('Transaction canceled!') + '',
         })

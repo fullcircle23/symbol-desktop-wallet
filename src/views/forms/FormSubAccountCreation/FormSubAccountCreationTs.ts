@@ -17,8 +17,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import { mapGetters } from 'vuex'
 import { Account, NetworkType, Password, Crypto } from 'symbol-sdk'
 import { MnemonicPassPhrase } from 'symbol-hd-wallets'
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb'
-import { SymbolLedger } from '@/core/utils/Ledger'
+import { LedgerService} from '@/services/LedgerService/LedgerService'
 // internal dependencies
 import { ValidationRuleset } from '@/core/validation/ValidationRuleset'
 import { DerivationService } from '@/services/DerivationService'
@@ -127,9 +126,12 @@ export class FormSubAccountCreationTs extends Vue {
     observer: InstanceType<typeof ValidationObserver>
   }
 
+  public ledgerService: LedgerService
+
   public created() {
     this.accountService = new AccountService()
     this.paths = new DerivationService()
+    this.ledgerService = new LedgerService()
   }
 
   /// region computed properties getter/setter
@@ -263,6 +265,8 @@ export class FormSubAccountCreationTs extends Vue {
     } else {
       // - get next path
       const nextPath = this.paths.getNextAccountPath(this.knownPaths)
+      console.log("this.knownPaths in derivationPath",)
+      console.log("nextPath in deriveNextChildAccount",nextPath)
 
       this.$store.dispatch('diagnostic/ADD_DEBUG', 'Adding child account with derivation path: ' + nextPath)
 
@@ -288,23 +292,24 @@ export class FormSubAccountCreationTs extends Vue {
     const accountPath = this.currentAccount.path
     const currentAccountIndex = accountPath.substring(accountPath.length - 2, accountPath.length - 1)
     const numAccount = this.knownPaths.length
+    const nextPath = this.paths.incrementPathLevel(accountPath)
+    console.log("nextPath with derivationService:",nextPath)
     let accountIndex
     if (numAccount <= Number(currentAccountIndex)) {
       accountIndex = numAccount + Number(currentAccountIndex)
     } else {
       accountIndex = numAccount + 1
     }
+    console.log('nextPath with Ledger',`m/44'/4343'/${this.networkType}'/0'/${accountIndex}'`)
     try {
       this.$Notice.success({
         title: this['$t']('Verify information in your device!') + '',
       })
-      const transport = await TransportWebUSB.create()
-      const symbolLedger = new SymbolLedger(transport, 'XYM')
-      const accountResult = await symbolLedger.getAccount(`m/44'/4343'/${this.networkType}'/0'/${accountIndex}'`)
+
+      const accountResult = await this.ledgerService.getAccount(`m/44'/4343'/${this.networkType}'/0'/${accountIndex}'`)
       const { address, publicKey, path } = accountResult
-      transport.close()
       const accName = Object.values(this.currentAccount)[1]
-      return {
+      const subAccount = {
         id: SimpleObjectStorage.generateIdentifier(),
         name: subAccountName,
         profileName: accName,
@@ -316,6 +321,7 @@ export class FormSubAccountCreationTs extends Vue {
         path: path,
         isMultisig: false,
       }
+      return subAccount
     } catch (e) {
       this.$store.dispatch('SET_UI_DISABLED', {
         isDisabled: false,

@@ -421,6 +421,7 @@
   "Set_the_password": "Enter your password",
   "Confirm_the_password": "Confirm your password",
   "Set_the_password_prompts": "Set a password hint",
+  "Set_the_Ledger_account_name": "Set the Ledger Account name",
   "skip": "Skip",
   "finished": "Finished",
   "forget_password": "Forgot password",
