@@ -10,7 +10,7 @@ import { NotificationType } from '@/core/utils/NotificationType'
 import { Password } from 'symbol-sdk'
 import { AccountService } from '@/services/AccountService'
 import { ProfileService } from '@/services/ProfileService'
-import { LedgerService} from '@/services/LedgerService/LedgerService'
+import { LedgerService } from '@/services/LedgerService/LedgerService'
 import { SimpleObjectStorage } from '@/core/database/backends/SimpleObjectStorage'
 
 // child components
@@ -133,8 +133,8 @@ export class ImportLedgerProfileTs extends Vue {
         title: this['$t']('Verify information in your device!') + '',
       })
 
-      const currentPath = `m/44'/4343'/${networkType}'/0'/${accountIndex}'`;
-      console.log("++++++++++currentPath",currentPath)
+      const currentPath = `m/44'/4343'/${networkType}'/0'/${accountIndex}'`
+      console.log('++++++++++currentPath', currentPath)
       const accountResult = await this.ledgerService.getAccount(currentPath)
       const { address, publicKey, path } = accountResult
       // add account to list

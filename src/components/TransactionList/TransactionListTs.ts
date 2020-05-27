@@ -31,7 +31,7 @@ import TransactionListFilters from '@/components/TransactionList/TransactionList
 // @ts-ignore
 import TransactionTable from '@/components/TransactionList/TransactionTable/TransactionTable.vue'
 import { TransactionGroup } from '@/store/Transaction'
-import { LedgerService} from '@/services/LedgerService/LedgerService'
+import { LedgerService } from '@/services/LedgerService/LedgerService'
 import { BroadcastResult } from '@/core/transactions/BroadcastResult'
 @Component({
   components: {
@@ -271,7 +271,7 @@ export class TransactionListTs extends Vue {
     this.$Notice.success({
       title: this['$t']('Verify information in your device!') + '',
     })
-    
+
     const currentPath = this.currentAccount.path
     const addr = this.currentAccount.address
     const signerPublickey = this.currentAccount.publicKey

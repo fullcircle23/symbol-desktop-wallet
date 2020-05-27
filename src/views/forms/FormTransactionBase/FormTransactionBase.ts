@@ -37,7 +37,7 @@ import { BroadcastResult } from '@/core/transactions/BroadcastResult'
 import { ValidationObserver } from 'vee-validate'
 import { Signer } from '@/store/Account'
 import { NetworkCurrencyModel } from '@/core/database/entities/NetworkCurrencyModel'
-import { LedgerService} from '@/services/LedgerService/LedgerService'
+import { LedgerService } from '@/services/LedgerService/LedgerService'
 // internal dependencies
 import { NetworkConfigurationModel } from '@/core/database/entities/NetworkConfigurationModel'
 
@@ -388,7 +388,7 @@ export class FormTransactionBase extends Vue {
               [],
               maxFee, //UInt64.fromUint(defaultFee),
             )
-              
+
             // - sign aggregate transaction and create lock
             const signedTx = await this.ledgerService.signTransaction(path, aggregateTx, this.generationHash, publicKey)
             const hashLock = LockFundsTransaction.create(
@@ -404,7 +404,12 @@ export class FormTransactionBase extends Vue {
               title: this['$t']('Sign LockFundTransaction to finish your registration!') + '',
             })
             // - sign hash lock and push
-            const signedLock = await this.ledgerService.signTransaction(currentPath, hashLock, this.generationHash, publicKey)
+            const signedLock = await this.ledgerService.signTransaction(
+              currentPath,
+              hashLock,
+              this.generationHash,
+              publicKey,
+            )
 
             // - push signed transactions (order matters)
             this.$store.commit('account/addSignedTransaction', signedLock)
@@ -442,7 +447,12 @@ export class FormTransactionBase extends Vue {
             transactions.map(async (transaction) => {
               await this.$store.dispatch('account/ADD_STAGED_TRANSACTION', transaction)
               // - sign transaction with \a account
-              const signature = await this.ledgerService.signTransaction(path, transaction, this.generationHash, publicKey)
+              const signature = await this.ledgerService.signTransaction(
+                path,
+                transaction,
+                this.generationHash,
+                publicKey,
+              )
               // transport.close()
               this.$store.commit('account/addSignedTransaction', signature)
               signedTransactions.push(signature)
