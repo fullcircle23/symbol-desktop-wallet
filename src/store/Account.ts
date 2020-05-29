@@ -92,23 +92,25 @@ export default {
   namespaced: true,
   state: accountState,
   getters: {
+    getInitialized: (state: AccountState) => state.initialized,
+    currentAccount: (state: AccountState): AccountModel => {
+      return state.currentAccount
+    },
+    signers: (state: AccountState): Signer[] => state.signers,
+    currentSigner: (state: AccountState): Signer => state.currentSigner,
     accountsInfo: (state: AccountState) => state.accountsInfo,
-    currentAccount: (state: AccountState): AccountModel => state.currentAccount,
     currentAccountAddress: (state: AccountState) => state.currentAccountAddress,
     currentAccountAccountInfo: (state: AccountState): AccountInfo => {
       return state.accountsInfo.find(({ publicKey }) => publicKey === state.currentAccount.publicKey)
     },
     currentAccountMultisigInfo: (state: AccountState) => state.currentAccountMultisigInfo,
-    currentSigner: (state: AccountState): Signer => state.currentSigner,
     currentSignerAddress: (state: AccountState) => state.currentSignerAddress,
     currentSignerMultisigInfo: (state: AccountState) => state.currentSignerMultisigInfo,
-    getInitialized: (state: AccountState) => state.initialized,
     getSubscriptions: (state: AccountState) => state.subscriptions,
     isCosignatoryMode: (state: AccountState) => state.isCosignatoryMode,
     knownAccounts: (state: AccountState) => state.knownAccounts,
     knownAddresses: (state: AccountState) => state.knownAddresses,
     multisigAccountsInfo: (state: AccountState) => state.multisigAccountsInfo,
-    getSubscriptions: (state: AccountState) => state.subscriptions,
   },
   mutations: {
     setInitialized: (state: AccountState, initialized: boolean) => {

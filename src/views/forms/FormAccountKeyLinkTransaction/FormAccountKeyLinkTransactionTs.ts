@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UInt64, LinkAction, AccountLinkTransaction } from 'symbol-sdk'
+import { Deadline, UInt64, LinkAction, AccountKeyLinkTransaction } from 'symbol-sdk'
 import { Component, Prop } from 'vue-property-decorator'
 import { mapGetters } from 'vuex'
 
 // internal dependencies
 import { Formatters } from '@/core/utils/Formatters'
 import { FormTransactionBase } from '@/views/forms/FormTransactionBase/FormTransactionBase'
-import { TransactionFactory } from '@/core/transactions/TransactionFactory'
 import {
-  ViewAccountLinkTransactionFormFieldsType,
-  ViewAccountLinkTransaction,
-} from '@/core/transactions/ViewAccountLinkTransaction'
+  ViewAccountKeyLinkTransaction,
+} from '@/core/transactions/ViewAccountKeyLinkTransaction'
 
 // child components
 import { ValidationObserver } from 'vee-validate'
@@ -53,7 +51,7 @@ const defaultFormItems = {
     currentPeer: 'network/currentPeer',
   }),
 })
-export class FormAccountLinkTransactionTs extends FormTransactionBase {
+export class FormAccountKeyLinkTransactionTs extends FormTransactionBase {
   @Prop({ required: true }) remoteAccountPublicKey: string
 
   /**
@@ -79,60 +77,46 @@ export class FormAccountLinkTransactionTs extends FormTransactionBase {
   /**
    * Getter for transactions that will be staged
    * @see {FormTransactionBase}
-   * @return {AccountLinkTransaction[]}
+   * @return {AccountKeyLinkTransaction[]}
    */
-  protected getTransactions(): AccountLinkTransaction[] {
-    this.factory = new TransactionFactory(this.$store)
-    try {
-      // - read form
-      const data: ViewAccountLinkTransactionFormFieldsType = {
-        remotePublicKey: this.remoteAccountPublicKey,
-        linkAction: this.formItems.linkAction,
-        maxFee: UInt64.fromUint(this.formItems.maxFee),
-      }
-
-      // - prepare transaction parameters
-      let view = new ViewAccountLinkTransaction(this.$store)
-      view = view.parse(data)
-
-      // - prepare transfer transaction
-      const transactions = [this.factory.build(view)]
-
-      this.$emit('toggleNext', true)
-
-      return transactions
-    } catch (error) {
-      console.error('Error happened in FormAccountLink.getTransactions(): ', error)
-    }
+  protected getTransactions(): AccountKeyLinkTransaction[] {
+    const maxFee = UInt64.fromUint(this.formItems.maxFee)
+    return [
+      AccountKeyLinkTransaction.create(
+        Deadline.create(),
+        this.remoteAccountPublicKey,
+        this.formItems.linkAction,
+        this.networkType,
+        maxFee,
+      )
+    ]
   }
 
   /**
-   * Setter for transactions that will be staged
+   * Setter for Alias transactions that will be staged
    * @see {FormTransactionBase}
-   * @param {AccountLinkTransaction[]} transactions
+   * @param {AliasTransaction[]} transactions
    * @throws {Error} If not overloaded in derivate component
    */
-  protected setTransactions(transactions: AccountLinkTransaction[]) {
+  protected setTransactions(transactions: AccountKeyLinkTransaction[]) {
     // - this form creates only 1 transaction
-    const [transaction] = transactions
-    this.remoteAccountPublicKey = transaction.remotePublicKey
-    this.formItems.linkAction = transaction.linkAction
-    this.formItems.maxFee = transaction.maxFee.compact()
-  }
+    const transaction = transactions.shift()
+    if (!transaction) return
 
-  /**
-   * Getter for whether forms should aggregate transactions
-   * @see {FormTransactionBase}
-   * @return {boolean} True if creating alias for multisig
-   */
-  protected isAggregateMode(): boolean {
-    return false
+    // - populate for items if transaction is an address alias
+    if (transaction instanceof AccountKeyLinkTransaction) {
+      this.remoteAccountPublicKey = transaction.linkedPublicKey
+      this.formItems.linkAction = transaction.linkAction
+    }
+
+    // - populate maxFee
+    this.formItems.maxFee = transaction.maxFee.compact()
   }
 
   /**
    * Hook called when the component is mounted
    */
-  public mounted() {
+  public async created() {
     this.$emit('toggleNext', false)
   }
 }

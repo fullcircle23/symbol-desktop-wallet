@@ -233,7 +233,7 @@ export class FormTransferTransactionTs extends FormTransactionBase {
         Deadline.create(),
         this.instantiatedRecipient,
         mosaics,
-        PlainMessage.create(this.formItems.messagePlain || ''),
+        PlainMessage.create(this.formItems.plainMessage || ''),
         this.networkType,
         UInt64.fromUint(this.formItems.maxFee),
       ),

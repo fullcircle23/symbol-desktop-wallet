@@ -8,14 +8,14 @@
 import { Component, Vue, Prop } from 'vue-property-decorator'
 
 @Component
-export default class Stepper extends Vue {
-  protected hasHarvestingWizard = false
+export default class ModalWizardDisplay extends Vue {
+  protected isDisplayed = false
 
   @Prop({ default: () => [] }) items: string[]
   @Prop({ default: 0 }) currentItemIndex: number
 
   protected showWizard(): void {
-    this.hasHarvestingWizard = true
+    this.isDisplayed = true
   }
 }
 </script>

@@ -19,6 +19,6 @@
 </template>
 
 <script lang="ts">
-import { FormAccountLinkTransactionTs } from './FormAccountLinkTransactionTs'
-export default class FormAccountLinkTransaction extends FormAccountLinkTransactionTs {}
+import { FormAccountKeyLinkTransactionTs } from './FormAccountKeyLinkTransactionTs'
+export default class FormAccountKeyLinkTransaction extends FormAccountKeyLinkTransactionTs {}
 </script>

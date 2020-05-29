@@ -3,7 +3,7 @@
     <span class="label">{{ $t('account_address') }}</span>
     <div class="value accountAddress">
       {{ getPrettyAddress() }}
-      <ButtonCopyToClipboard v-model="account.address">
+      <ButtonCopyToClipboard v-model="address">
         <img src="@/views/resources/img/account/copyIcon.png" class="copy-icon" />
       </ButtonCopyToClipboard>
     </div>

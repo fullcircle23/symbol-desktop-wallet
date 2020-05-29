@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and limitations under the License.
  *
  */
-import { Address, TransferTransaction, UInt64, PersistentHarvestingDelegationMessage, Account } from 'symbol-sdk'
+import { Address, Deadline, TransferTransaction, UInt64, PersistentHarvestingDelegationMessage, Account } from 'symbol-sdk'
 import { Component, Prop } from 'vue-property-decorator'
 import { mapGetters } from 'vuex'
 
 // internal dependencies
 import { Formatters } from '@/core/utils/Formatters'
-import { TransferFormFieldsType, ViewTransferTransaction } from '@/core/transactions/ViewTransferTransaction'
+import { ViewTransferTransaction } from '@/core/transactions/ViewTransferTransaction'
 import { FormTransactionBase } from '@/views/forms/FormTransactionBase/FormTransactionBase'
-import { TransactionFactory } from '@/core/transactions/TransactionFactory'
 
 // child components
 import { ValidationObserver } from 'vee-validate'
@@ -35,6 +34,7 @@ import SignerSelector from '@/components/SignerSelector/SignerSelector.vue'
 import MaxFeeAndSubmit from '@/components/MaxFeeAndSubmit/MaxFeeAndSubmit.vue'
 // @ts-ignore
 import FormRow from '@/components/FormRow/FormRow.vue'
+import { Transfer } from 'view-design'
 
 @Component({
   components: {
@@ -84,45 +84,28 @@ export class FormPersistentDelegationRequestTransactionTs extends FormTransactio
   }
 
   /**
-   * Getter for whether forms should aggregate transactions
-   * @see {FormTransactionBase}
-   * @return {boolean} True if creating transfer for multisig
-   */
-  protected isAggregateMode(): boolean {
-    return false
-  }
-
-  /**
    * Getter for TRANSFER transactions that will be staged
    * @see {FormTransactionBase}
    * @return {TransferTransaction[]}
    */
   protected getTransactions(): TransferTransaction[] {
-    this.factory = new TransactionFactory(this.$store)
-    try {
-      const message = PersistentHarvestingDelegationMessage.create(
-        this.remoteAccount.publicKey,
-        this.formItems.nodePublicKey,
-        this.networkType,
-      )
+    const maxFee = UInt64.fromUint(this.formItems.maxFee)
+    const message = PersistentHarvestingDelegationMessage.create(
+      this.remoteAccount.publicKey,
+      this.formItems.nodePublicKey,
+      this.networkType,
+    )
 
-      // - read form
-      const data: TransferFormFieldsType = {
-        recipient: this.instantiatedRecipient,
-        mosaics: [],
+    return [
+      TransferTransaction.create(
+        Deadline.create(),
+        this.instantiatedRecipient,
+        [],
         message,
-        maxFee: UInt64.fromUint(this.formItems.maxFee),
-      }
-
-      // - prepare transaction parameters
-      let view = new ViewTransferTransaction(this.$store)
-      view = view.parse(data)
-
-      // - prepare transfer transaction
-      return [this.factory.build(view)]
-    } catch (error) {
-      console.error('Error happened in FormTransferTransaction.transactions(): ', error)
-    }
+        this.networkType,
+        maxFee,
+      )
+    ]
   }
 
   /**

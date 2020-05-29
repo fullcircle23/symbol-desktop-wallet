@@ -49,7 +49,7 @@ describe('services/RemoteAccountService', () => {
         'BB6FF99C52B3C9D880D5E59C10AD696D90CF84A8E825CCA16F584A8BCE4D17E6',
         UInt64.fromUint(0),
         AccountType.Remote,
-        '',
+        [],
         [],
         [],
         UInt64.fromUint(0),

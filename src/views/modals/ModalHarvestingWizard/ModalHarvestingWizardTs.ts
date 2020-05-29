@@ -6,13 +6,13 @@ import { mapGetters } from 'vuex'
 
 // child components
 // @ts-ignore
-import Stepper from '@/views/modals/Stepper/Stepper.vue'
+import ModalWizardDisplay from '@/views/modals/ModalWizardDisplay/ModalWizardDisplay.vue'
 // @ts-ignore
 import FormRow from '@/components/FormRow/FormRow.vue'
 // @ts-ignore
 import FormRemoteAccountCreation from '@/views/forms/FormRemoteAccountCreation/FormRemoteAccountCreation.vue'
 // @ts-ignore
-import FormAccountLinkTransaction from '@/views/forms/FormAccountLinkTransaction/FormAccountLinkTransaction.vue'
+import FormAccountKeyLinkTransaction from '@/views/forms/FormAccountKeyLinkTransaction/FormAccountKeyLinkTransaction.vue'
 // @ts-ignore
 import FormHarvestingNodeSelection from '@/views/forms/FormHarvestingNodeSelection/FormHarvestingNodeSelection.vue'
 // @ts-ignore
@@ -22,18 +22,16 @@ import FormPersistentDelegationRequestTransaction from '@/views/forms/FormPersis
  * Wizard steps
  */
 enum HarvestingWizardSteps {
-  REMOTE_ACCOUNT = 0,
-  ACCOUNT_LINK = 1,
-  NODE_SELECTION = 2,
-  DELEGATION_REQUEST = 3,
+  SET_UP = 0,
+  CONFIRMATION = 1
 }
 
 @Component({
   components: {
-    Stepper,
+    ModalWizardDisplay,
     FormRow,
     FormRemoteAccountCreation,
-    FormAccountLinkTransaction,
+    FormAccountKeyLinkTransaction,
     FormHarvestingNodeSelection,
     FormPersistentDelegationRequestTransaction,
   },
@@ -59,9 +57,11 @@ export class ModalHarvestingWizardTs extends Vue {
   private currentAccountAccountInfo: AccountInfo
 
   /**
-   * Items that will be shown in the stepper
+   * Items that will be shown in the ModalWizardDisplay
    */
-  protected stepperItems = Object.keys(HarvestingWizardSteps).filter((key) => Number.isNaN(parseFloat(key)))
+  protected ModalWizardDisplayItems = Object.keys(HarvestingWizardSteps).filter(
+    (key) => Number.isNaN(parseInt(key))
+  )
 
   /**
    * Currently active step
@@ -113,7 +113,7 @@ export class ModalHarvestingWizardTs extends Vue {
     let nextStepIndex = (this.currentStepIndex += 1)
 
     // skip the account link step if the current account is already linked
-    if (nextStepIndex === this.wizardSteps.ACCOUNT_LINK && this.isCurrentAccountLinked) {
+    if (nextStepIndex === this.wizardSteps.SET_UP && this.isCurrentAccountLinked) {
       nextStepIndex += 1
     }
 

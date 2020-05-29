@@ -24,6 +24,7 @@ import {
   Transaction,
   TransactionType,
   TransferTransaction,
+  AccountKeyLinkTransaction,
 } from 'symbol-sdk'
 import { ViewUnknownTransaction } from '@/core/transactions/ViewUnknownTransaction'
 import { ViewHashLockTransaction } from '@/core/transactions/ViewHashLockTransaction'
@@ -33,6 +34,7 @@ import { ViewMosaicSupplyChangeTransaction } from '@/core/transactions/ViewMosai
 import { ViewNamespaceRegistrationTransaction } from '@/core/transactions/ViewNamespaceRegistrationTransaction'
 import { ViewTransferTransaction } from '@/core/transactions/ViewTransferTransaction'
 import { ViewAliasTransaction } from '@/core/transactions/ViewAliasTransaction'
+import { ViewAccountKeyLinkTransaction } from '@/core/transactions/ViewAccountKeyLinkTransaction'
 import { Store } from 'vuex'
 import { TransactionView } from '@/core/transactions/TransactionView'
 
@@ -86,6 +88,8 @@ export class TransactionViewFactory {
         return new ViewAliasTransaction($store, transaction as MosaicAliasTransaction)
       case TransactionType.ADDRESS_ALIAS:
         return new ViewAliasTransaction($store, transaction as AddressAliasTransaction)
+      case TransactionType.ACCOUNT_KEY_LINK:
+        return new ViewAccountKeyLinkTransaction($store, transaction as AccountKeyLinkTransaction)
       default:
         throw new Error(`View not implemented for transaction type '${transaction.type}'`)
     }

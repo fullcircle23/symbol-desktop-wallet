@@ -1,18 +1,23 @@
 <template>
   <div class="container">
     <Modal v-model="show" class-name="modal-container" :footer-hide="true">
-      <Stepper :items="stepperItems" :current-item-index="currentStepIndex" />
+      <ModalWizardDisplay :items="wizardSteps" :current-item-index="currentStepIndex" />
+
+      <!--
       <div v-if="wizardSteps[currentStepIndex] === 'REMOTE_ACCOUNT'">
         <FormRemoteAccountCreation @setRemoteAccount="onSetRemoteAccount" @toggleNext="onNextToggled" />
       </div>
       <div v-if="wizardSteps[currentStepIndex] === 'ACCOUNT_LINK'">
-        <FormAccountLinkTransaction :remote-account-public-key="remoteAccount.publicKey" @toggleNext="onNextToggled" />
+        <FormAccountKeyLinkTransaction :remote-account-public-key="remoteAccount.publicKey" @toggleNext="onNextToggled" />
       </div>
-      <div v-if="wizardSteps[currentStepIndex] === 'NODE_SELECTION'">
+      -->
+
+      <div v-if="wizardSteps[currentStepIndex] === 'SET_UP'">
         <FormHarvestingNodeSelection @setNodePublicKey="onSetNodePublicKey" @toggleNext="onNextToggled" />
-      </div>
-      <div v-if="wizardSteps[currentStepIndex] === 'DELEGATION_REQUEST'">
         <FormPersistentDelegationRequestTransaction :remote-account="remoteAccount" :node-public-key="nodePublicKey" />
+      </div>
+      <div v-if="wizardSteps[currentStepIndex] === 'CONFIRMATION'">
+        <p>CONFIRM</p>
       </div>
 
       <div class="previous-next-container">
